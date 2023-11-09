@@ -21,6 +21,9 @@ const ProfileForm = () => {
           password: enteredNewPassword,
           returnSecureToken: true,
         }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
       const data = await response.json();
       if (response.ok) {
