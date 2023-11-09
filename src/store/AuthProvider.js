@@ -7,14 +7,20 @@ const AuthProvider = (props) => {
 
   const isLoggedIn = !!token;
 
-  const login = (token) => {
-    localStorage.setItem("token", token);
-    setToken(token);
-  };
-
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("time");
     setToken(null);
+  };
+
+  const login = (token) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("time", Date.now());
+    setToken(token);
+    setTimeout(() => {
+      console.log("logging out");
+      logout();
+    }, 5 * 60 * 1000);
   };
 
   const authCtx = {
