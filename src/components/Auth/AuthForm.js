@@ -26,46 +26,36 @@ const AuthForm = () => {
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
     setIsLoading(true);
-    let response;
+    let url;
     if (isLogin) {
-      response = await fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[API_KEY]",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-            returnSecureToken: true,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[API_KEY]";
     } else {
-      response = await fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=[API_KEY]",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-            returnSecureToken: true,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=[API_KEY]";
     }
-    if (response.ok) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          email: enteredEmail,
+          password: enteredPassword,
+          returnSecureToken: true,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       const data = await response.json();
-      console.log(data.idToken);
-    } else {
-      const data = await response.json();
-      console.log(data);
-      alert(data.error.message);
+      if (response.ok) {
+        console.log(data.idToken);
+      } else {
+        throw new Error(data.error.message);
+      }
+    } catch (err) {
+      alert(err.message);
     }
+
     setIsLoading(false);
   };
 
