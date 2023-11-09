@@ -6,18 +6,18 @@ const AuthForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const [isLogin, setIsLogin] = useState(true);
-  const [status, setStatus] = useState("done");
+  const [isLoading, setIsLoading] = useState(false);
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
   };
 
   let buttonContent;
-  if (isLogin && status === "done") {
+  if (isLogin && !isLoading) {
     buttonContent = "Login";
-  } else if (!isLogin && status === "done") {
+  } else if (!isLogin && !isLoading) {
     buttonContent = "Create Account";
-  } else if (status === "pending") {
+  } else if (isLoading) {
     buttonContent = "Sending request...";
   }
 
@@ -25,9 +25,10 @@ const AuthForm = () => {
     event.preventDefault();
     const enteredEmail = emailInputRef.current.value;
     const enteredPassword = passwordInputRef.current.value;
-    setStatus("pending");
+    setIsLoading(true);
+    let response;
     if (isLogin) {
-      const response = await fetch(
+      response = await fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[API_KEY]",
         {
           method: "POST",
@@ -41,16 +42,8 @@ const AuthForm = () => {
           },
         }
       );
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-      } else {
-        const data = await response.json();
-        console.log(data);
-        alert(data.error.message);
-      }
     } else {
-      const response = await fetch(
+      response = await fetch(
         "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=[API_KEY]",
         {
           method: "POST",
@@ -64,16 +57,16 @@ const AuthForm = () => {
           },
         }
       );
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-      } else {
-        const data = await response.json();
-        console.log(data);
-        alert(data.error.message);
-      }
     }
-    setStatus("done");
+    if (response.ok) {
+      const data = await response.json();
+      console.log(data.idToken);
+    } else {
+      const data = await response.json();
+      console.log(data);
+      alert(data.error.message);
+    }
+    setIsLoading(false);
   };
 
   return (
