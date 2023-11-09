@@ -52,7 +52,7 @@ const AuthForm = () => {
       const data = await response.json();
       if (response.ok) {
         authCtx.login(data.idToken);
-        history.push("/profile");
+        history.replace("/");
       } else {
         throw new Error(data.error.message);
       }
